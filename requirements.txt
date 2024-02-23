@@ -1,0 +1,17 @@
+torch
+torchvision
+torchaudio
+numpy
+scipy
+scikit-image
+opencv-python
+pillow
+diffusers
+transformers
+accelerate
+matplotlib
+tqdm
+gradio
+config
+einops
+ninja
