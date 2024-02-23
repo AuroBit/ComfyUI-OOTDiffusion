@@ -50,5 +50,6 @@ OOTDGenerate: 生成图像
 
 ## 示例图片
 
-![](./assets/cloth_1.jpg)
-![](./assets/model_1.png)
+[衣服 1](./assets/cloth_1.jpg)
+
+[模特 1](./assets/model_1.png)
