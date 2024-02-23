@@ -42,12 +42,13 @@ git checkout main
 conda create -n ootd
 conda activate ootd
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+
+# 修复潜在的一些问题
 conda install cudatoolkit-dev -c conda-forge
 
+# 安装此项目的依赖
 pip install -r custom_nodes/ComfyUI-OOTDiffusion/requirements.txt
 ```
-
-安装 custom_nodes/ComfyUI-OOTDiffusion 目录下的 requirements.txt。
 
 启动 ComfyUI 即可。
 
@@ -62,3 +63,10 @@ OOTDGenerate: 生成图像
 [衣服 1](./assets/cloth_1.jpg)
 
 [模特 1](./assets/model_1.png)
+
+## 注意事项
+
+目前此项目只是对 OOTDiffusion 的功能做了个简单的迁移。
+OOTDiffusion 本体依赖于 `diffusers==0.24.0` 实现，所以假如有其他节点的依赖冲突是没办法解决的（本就不该依赖 diffusers）。
+
+在 `Ubuntu 22.02` / `Python 3.10.x` 下可以正常运行。Windows 没有测试过。
