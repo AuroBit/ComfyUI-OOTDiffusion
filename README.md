@@ -21,7 +21,15 @@ git lfs install
 git clone https://huggingface.co/levihsu/OOTDiffusion models/OOTDiffusion
 ```
 
-下载依赖：
+拉取 Huggingface 时大约会下载 8 个模型，假如断开连接，可以使用下面命令恢复下载：
+
+```txt
+cd models/OOTDiffusion
+git lfs fetch
+git checkout main
+```
+
+建立环境并下载依赖：
 
 ```txt
 conda create -n ootd
