@@ -46,6 +46,17 @@ class OOTDGenerate:
                 # "keypoints": ("POSE_KEYPOINT",),
                 # "category": ("STRING", ["upperbody", "lowerbody", "dress"]),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
+                "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
+                "cfg": (
+                    "FLOAT",
+                    {
+                        "default": 2.0,
+                        "min": 0.0,
+                        "max": 14.0,
+                        "step": 0.1,
+                        "round": 0.01,
+                    },
+                ),
             }
         }
 
@@ -55,7 +66,7 @@ class OOTDGenerate:
 
     CATEGORY = "OOTD"
 
-    def generate(self, pipe, cloth_image, model_image, seed):
+    def generate(self, pipe, cloth_image, model_image, seed, steps, cfg):
         category = "upperbody"
         # if model_image.shape != (1, 1024, 768, 3) or (
         #     cloth_image.shape != (1, 1024, 768, 3)
@@ -100,8 +111,8 @@ class OOTDGenerate:
             mask=mask,
             image_ori=model_image,
             num_samples=1,
-            num_steps=20,
-            image_scale=1,
+            num_steps=steps,
+            image_scale=cfg,
             seed=seed,
         )
 
