@@ -29,13 +29,21 @@ from .pipelines_ootd.unet_vton_2d_condition import UNetVton2DConditionModel
 
 class OOTDiffusion:
 
-    def __init__(self, hg_root: str):
+    def __init__(self, hg_root: str, model_type: str = "hd"):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+
+        if model_type not in ("hd", "dc"):
+            raise ValueError(f"model_type must be 'hd' or 'dc', got {model_type!r}")
+
+        self.model_type = model_type
 
         # hg_root = str(Path.cwd().resolve() / hg_root)
         VIT_PATH = f"openai/clip-vit-large-patch14"
         VAE_PATH = f"{hg_root}/checkpoints/ootd"
-        UNET_PATH = f"{hg_root}/checkpoints/ootd/ootd_hd/checkpoint-36000"
+        if model_type == "hd":
+            UNET_PATH = f"{hg_root}/checkpoints/ootd/ootd_hd/checkpoint-36000"
+        else:
+            UNET_PATH = f"{hg_root}/checkpoints/ootd/ootd_dc/checkpoint-36000"
         MODEL_PATH = f"{hg_root}/checkpoints/ootd"
 
         vae = AutoencoderKL.from_pretrained(
@@ -95,7 +103,6 @@ class OOTDiffusion:
 
     def __call__(
         self,
-        model_type="hd",
         category="upperbody",
         image_garm=None,
         image_vton=None,
@@ -108,7 +115,7 @@ class OOTDiffusion:
     ):
         if seed == -1:
             random.seed(time.time())
-            seed = random.randint(0, 2147483647)
+            seed = random.randint(0, 0xFFFFFFFFFFFFFFFF)
         print("Initial seed: " + str(seed))
         generator = torch.manual_seed(seed)
 
@@ -120,12 +127,12 @@ class OOTDiffusion:
                 prompt_image.data["pixel_values"]
             ).image_embeds
             prompt_image = prompt_image.unsqueeze(1)
-            if model_type == "hd":
+            if self.model_type == "hd":
                 prompt_embeds = self.text_encoder(
                     self.tokenize_captions([""], 2).to(self.device)
                 )[0]
                 prompt_embeds[:, 1:] = prompt_image[:]
-            elif model_type == "dc":
+            elif self.model_type == "dc":
                 prompt_embeds = self.text_encoder(
                     self.tokenize_captions([category], 3).to(self.device)
                 )[0]

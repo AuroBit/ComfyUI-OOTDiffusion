@@ -8,10 +8,21 @@ from .ootd_utils import get_mask_location
 from .openpose.run_openpose import OpenPose
 
 
+_category_get_mask_input = {
+    "upperbody": "upper_body",
+    "lowerbody": "lower_body",
+    "dress": "dresses",
+}
+
+
 class LoadOOTDPipeline:
     @classmethod
     def INPUT_TYPES(cls):
-        return {"required": {}}
+        return {
+            "required": {
+                # "model_type": ("STRING", ["hd", "dc"]),
+            }
+        }
 
     RETURN_TYPES = ("MODEL",)
     RETURN_NAMES = ("pipe",)
@@ -33,7 +44,8 @@ class OOTDGenerate:
                 "model_image": ("IMAGE",),
                 # Openpose from comfyui-controlnet-aux not work
                 # "keypoints": ("POSE_KEYPOINT",),
-                # "seed": ("INT",),
+                # "category": ("STRING", ["upperbody", "lowerbody", "dress"]),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
             }
         }
 
@@ -43,28 +55,46 @@ class OOTDGenerate:
 
     CATEGORY = "OOTD"
 
-    def generate(self, pipe, cloth_image, model_image):
+    def generate(self, pipe, cloth_image, model_image, seed):
+        category = "upperbody"
+        # if model_image.shape != (1, 1024, 768, 3) or (
+        #     cloth_image.shape != (1, 1024, 768, 3)
+        # ):
+        #     raise ValueError(
+        #         f"Input image must be size (1, 1024, 768, 3). "
+        #         f"Got model_image {model_image.shape} cloth_image {cloth_image.shape}"
+        #     )
+
         # (1,H,W,3) -> (3,H,W)
         model_image = model_image.squeeze(0)
         model_image = model_image.permute((2, 0, 1))
         model_image = to_pil_image(model_image)
+        if model_image.size != (768, 1024):
+            print(f"Inconsistent model_image size {model_image.size} != (768, 1024)")
+        model_image = model_image.resize((768, 1024))
         cloth_image = cloth_image.squeeze(0)
         cloth_image = cloth_image.permute((2, 0, 1))
         cloth_image = to_pil_image(cloth_image)
-        model_parse, _ = Parsing(pipe.device)(model_image)
-        keypoints = OpenPose()(model_image)
+        if cloth_image.size != (768, 1024):
+            print(f"Inconsistent cloth_image size {cloth_image.size} != (768, 1024)")
+        cloth_image = cloth_image.resize((768, 1024))
+
+        model_parse, _ = Parsing(pipe.device)(model_image.resize((384, 512)))
+        keypoints = OpenPose()(model_image.resize((384, 512)))
         mask, mask_gray = get_mask_location(
-            "hd",
-            "upper_body",
+            pipe.model_type,
+            _category_get_mask_input[category],
             model_parse,
             keypoints,
-            width=model_image.size[0],
-            height=model_image.size[1],
+            width=384,
+            height=512,
         )
+        mask = mask.resize((768, 1024), Image.NEAREST)
+        mask_gray = mask_gray.resize((768, 1024), Image.NEAREST)
+
         masked_vton_img = Image.composite(mask_gray, model_image, mask)
         images = pipe(
-            model_type="hd",
-            category="upper_body",
+            category=category,
             image_garm=cloth_image,
             image_vton=masked_vton_img,
             mask=mask,
@@ -72,13 +102,15 @@ class OOTDGenerate:
             num_samples=1,
             num_steps=20,
             image_scale=1,
-            seed=-1,
+            seed=seed,
         )
+
         output_image = to_tensor(images[0])
         output_image = output_image.permute((1, 2, 0))
         masked_vton_img = masked_vton_img.convert("RGB")
         masked_vton_img = to_tensor(masked_vton_img)
         masked_vton_img = masked_vton_img.permute((1, 2, 0))
+
         return ([output_image], [masked_vton_img])
 
 
