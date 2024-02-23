@@ -86,3 +86,8 @@ NODE_CLASS_MAPPINGS = {
     "LoadOOTDPipeline": LoadOOTDPipeline,
     "OOTDGenerate": OOTDGenerate,
 }
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "LoadOOTDPipeline": "Load OOTDiffusion",
+    "OOTDGenerate": "OOTDiffusion Generate",
+}
