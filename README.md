@@ -1,6 +1,6 @@
 # ComfyUI OOTDiffusion
 
-A ComfyUI custom node that simply integrates the OOTDiffusion functionality.
+A ComfyUI custom node that simply integrates the [OOTDiffusion](https://github.com/levihsu/OOTDiffusion) functionality.
 
 一个简单接入 OOTDiffusion 的 ComfyUI 节点。
 
