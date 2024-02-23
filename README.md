@@ -4,7 +4,7 @@ A ComfyUI custom node that simply integrates the [OOTDiffusion](https://github.c
 
 一个简单接入 OOTDiffusion 的 ComfyUI 节点。
 
-👇 拖动下面的图片到 ComfyUI 前端即可运行 👇 Drag into ComfyUI frontend
+👇 下载下面的流程图拖到 ComfyUI 前端即可运行 👇 Download and drag into ComfyUI frontend
 
 ![](./assets/graph.png)
 
@@ -69,6 +69,8 @@ pip install -r custom_nodes/ComfyUI-OOTDiffusion/requirements.txt
 Load OOTDiffusion: 加载 OOTDiffusion Pipeline
 
 OOTDiffusion Generate: 生成图像
+
+    cfg: 输出图像和输入衣服的贴合程度
 
 ## Example image 示例图片
 
