@@ -124,7 +124,8 @@ def load_atr_model():
     label = ['Background', 'Hat', 'Hair', 'Sunglasses', 'Upper-clothes', 'Skirt', 'Pants', 'Dress', 'Belt',
              'Left-shoe', 'Right-shoe', 'Face', 'Left-leg', 'Right-leg', 'Left-arm', 'Right-arm', 'Bag', 'Scarf']
     model = networks.init_model('resnet101', num_classes=num_classes, pretrained=None)
-    state_dict = torch.load('models/humanparsing/exp-schp-201908301523-atr.pth')['state_dict']
+    #! annotated config
+    state_dict = torch.load('models/OOTDiffusion/checkpoints/humanparsing/exp-schp-201908301523-atr.pth')['state_dict']
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
         name = k[7:]  # remove `module.`
@@ -142,7 +143,8 @@ def load_lip_model():
                   'Socks', 'Pants', 'Jumpsuits', 'Scarf', 'Skirt', 'Face', 'Left-arm', 'Right-arm',
                   'Left-leg', 'Right-leg', 'Left-shoe', 'Right-shoe']
     model = networks.init_model('resnet101', num_classes=num_classes, pretrained=None)
-    state_dict = torch.load('models/humanparsing/exp-schp-201908261155-lip.pth')['state_dict']
+    #! annotated config
+    state_dict = torch.load('models/OOTDiffusion/checkpoints/humanparsing/exp-schp-201908261155-lip.pth')['state_dict']
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
         name = k[7:]  # remove `module.`
