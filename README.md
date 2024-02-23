@@ -4,6 +4,8 @@ A ComfyUI custom node that simply integrates the OOTDiffusion functionality.
 
 一个简单接入 OOTDiffusion 的 ComfyUI 节点。
 
+![](./assets/graph.png)
+
 ## Instruction 指南
 
 根据 https://git-lfs.com 安装 git lfs：
@@ -19,6 +21,17 @@ git lfs install
 git clone https://huggingface.co/levihsu/OOTDiffusion models/OOTDiffusion
 ```
 
+下载依赖：
+
+```txt
+conda create -n ootd
+conda activate ootd
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+conda install cudatoolkit-dev -c conda-forge
+```
+
+安装 custom_nodes/ComfyUI-OOTDiffusion 目录下的 requirements.txt。
+
 启动 ComfyUI 即可。
 
 ## 节点
@@ -26,3 +39,8 @@ git clone https://huggingface.co/levihsu/OOTDiffusion models/OOTDiffusion
 LoadOOTDPipeline: 加载 OOTD Pipeline
 
 OOTDGenerate: 生成图像
+
+## 示例图片
+
+![](./assets/cloth_1.jpg)
+![](./assets/model_1.png)
