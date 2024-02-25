@@ -1,14 +1,11 @@
+import os
 import random
 import sys
 import time
 from pathlib import Path
 
-import cv2
-import numpy as np
 import torch
-import torch.nn.functional as F
 from diffusers import AutoencoderKL, UniPCMultistepScheduler
-from PIL import Image
 from transformers import (
     AutoProcessor,
     CLIPTextModel,
@@ -16,7 +13,6 @@ from transformers import (
     CLIPVisionModelWithProjection,
 )
 
-# sys.path.append(str(Path(__file__).parent))
 from . import pipelines_ootd
 
 #! Necessary for OotdPipeline.from_pretrained
@@ -29,7 +25,7 @@ from .pipelines_ootd.unet_vton_2d_condition import UNetVton2DConditionModel
 
 class OOTDiffusion:
 
-    def __init__(self, hg_root: str, model_type: str = "hd"):
+    def __init__(self, root: str, model_type: str = "hd"):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         if model_type not in ("hd", "dc"):
@@ -37,20 +33,13 @@ class OOTDiffusion:
 
         self.model_type = model_type
 
-        # hg_root = str(Path.cwd().resolve() / hg_root)
         VIT_PATH = f"openai/clip-vit-large-patch14"
-        VAE_PATH = f"{hg_root}/checkpoints/ootd"
+        MODEL_PATH = Path(f"{root}/checkpoints/ootd")
         if model_type == "hd":
-            UNET_PATH = f"{hg_root}/checkpoints/ootd/ootd_hd/checkpoint-36000"
+            UNET_PATH = MODEL_PATH / "ootd_hd" / "checkpoint-36000"
         else:
-            UNET_PATH = f"{hg_root}/checkpoints/ootd/ootd_dc/checkpoint-36000"
-        MODEL_PATH = f"{hg_root}/checkpoints/ootd"
+            UNET_PATH = MODEL_PATH / "ootd_dc" / "checkpoint-36000"
 
-        vae = AutoencoderKL.from_pretrained(
-            VAE_PATH,
-            subfolder="vae",
-            torch_dtype=torch.float16,
-        )
         unet_garm = UNetGarm2DConditionModel.from_pretrained(
             UNET_PATH,
             subfolder="unet_garm",
@@ -67,7 +56,10 @@ class OOTDiffusion:
             MODEL_PATH,
             unet_garm=unet_garm,
             unet_vton=unet_vton,
-            vae=vae,
+            vae=AutoencoderKL.from_pretrained(
+                f"{MODEL_PATH}/vae",
+                torch_dtype=torch.float16,
+            ),
             torch_dtype=torch.float16,
             variant="fp16",
             use_safetensors=True,
@@ -82,14 +74,8 @@ class OOTDiffusion:
         self.image_encoder = CLIPVisionModelWithProjection.from_pretrained(VIT_PATH).to(
             self.device
         )
-        self.tokenizer = CLIPTokenizer.from_pretrained(
-            MODEL_PATH,
-            subfolder="tokenizer",
-        )
-        self.text_encoder = CLIPTextModel.from_pretrained(
-            MODEL_PATH,
-            subfolder="text_encoder",
-        ).to(self.device)
+        self.tokenizer = self.pipe.tokenizer
+        self.text_encoder = self.pipe.text_encoder
 
     def tokenize_captions(self, captions, max_length):
         inputs = self.tokenizer(

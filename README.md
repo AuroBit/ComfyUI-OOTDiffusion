@@ -66,7 +66,9 @@ pip install -r custom_nodes/ComfyUI-OOTDiffusion/requirements.txt
 
 ## Node 节点
 
-Load OOTDiffusion: 加载 OOTDiffusion Pipeline
+Load OOTDiffusion Local: 从本地目录加载 OOTDiffusion Pipeline
+
+Load OOTDiffusion from Hub: 从 huggingface 自动下载并加载 OOTDiffusion Pipeline
 
 OOTDiffusion Generate: 生成图像
 
@@ -84,8 +86,10 @@ OOTDiffusion Generate: 生成图像
 OOTDiffusion 本体依赖于 `diffusers==0.24.0` 实现，所以假如有其他节点的依赖冲突是没办法解决的（本就不该依赖 diffusers）。
 靠 vendor 也能解决，所以也不是大问题。
 
-不使用 huggingface_hub 是因为 OOTD 提供的仓库并不是一个单纯的 diffusion model structure，
-里面还包含了独立的 openpose 和 humanparsing 模型文件。
-目前只有 openai/clip-vit-large-patch14 是使用 huggingface_hub 下载的。
-
 在 `Ubuntu 22.02` / `Python 3.10.x` 下可以正常运行。Windows 没有测试过。
+
+## 更新日志 Release Note
+
+2024-02-25:
+
+移除 git lfs 下载教程，提供 Load OOTDiffusion from Hub 节点

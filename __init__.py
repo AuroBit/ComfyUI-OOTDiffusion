@@ -1,4 +1,7 @@
+import os
+
 import numpy as np
+from huggingface_hub import snapshot_download
 from PIL import Image
 from torchvision.transforms.functional import to_pil_image, to_tensor
 
@@ -6,7 +9,6 @@ from .humanparsing.aigc_run_parsing import Parsing
 from .inference_ootd import OOTDiffusion
 from .ootd_utils import get_mask_location
 from .openpose.run_openpose import OpenPose
-
 
 _category_get_mask_input = {
     "upperbody": "upper_body",
@@ -16,11 +18,14 @@ _category_get_mask_input = {
 
 
 class LoadOOTDPipeline:
+    display_name = "Load OOTDiffusion Local"
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                # "model_type": ("STRING", ["hd", "dc"]),
+                "type": (["Half body", "Full body"],),
+                "path": ("STRING", {"default": "models/OOTDiffusion"}),
             }
         }
 
@@ -30,11 +35,53 @@ class LoadOOTDPipeline:
 
     CATEGORY = "OOTD"
 
-    def load(self):
-        return (OOTDiffusion(hg_root="models/OOTDiffusion"),)
+    @staticmethod
+    def load_impl(type, path):
+        if type == "Half body":
+            type = "hd"
+        elif type == "Full body":
+            type = "dc"
+            raise RuntimeError("full body is not supported yet")
+        else:
+            raise ValueError(
+                f"unknown input type {type} must be 'Half body' or 'Full body'"
+            )
+        if not os.path.isdir(path):
+            raise ValueError(f"input path {path} is not a directory")
+        return OOTDiffusion(path, model_type=type)
+
+    def load(self, type, path):
+        return (self.load_impl(type, path),)
+
+
+class LoadOOTDPipelineHub(LoadOOTDPipeline):
+    display_name = "Load OOTDiffusion from Hub🤗"
+
+    repo_id = "levihsu/OOTDiffusion"
+    repo_revision = "c63b33843e01c8c2c8e591a1d6b88a2feba478b8"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "type": (["Half body", "Full body"],),
+            }
+        }
+
+    def load(self, type):  # type: ignore
+        # DiffusionPipeline.from_pretrained doesn't support subfolder
+        # So we use snapshot_download to get local path first
+        path = snapshot_download(
+            self.repo_id,
+            revision=self.repo_revision,
+            resume_download=True,
+        )
+        return (LoadOOTDPipeline.load_impl(type, path),)
 
 
 class OOTDGenerate:
+    display_name = "OOTDiffusion Generate"
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -44,6 +91,7 @@ class OOTDGenerate:
                 "model_image": ("IMAGE",),
                 # Openpose from comfyui-controlnet-aux not work
                 # "keypoints": ("POSE_KEYPOINT",),
+                # TODO: add category when dc model release
                 # "category": ("STRING", ["upperbody", "lowerbody", "dress"]),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
@@ -116,6 +164,7 @@ class OOTDGenerate:
             seed=seed,
         )
 
+        # pil(H,W,3) -> tensor(H,W,3)
         output_image = to_tensor(images[0])
         output_image = output_image.permute((1, 2, 0))
         masked_vton_img = masked_vton_img.convert("RGB")
@@ -125,12 +174,14 @@ class OOTDGenerate:
         return ([output_image], [masked_vton_img])
 
 
-NODE_CLASS_MAPPINGS = {
-    "LoadOOTDPipeline": LoadOOTDPipeline,
-    "OOTDGenerate": OOTDGenerate,
-}
+_export_classes = [
+    LoadOOTDPipeline,
+    LoadOOTDPipelineHub,
+    OOTDGenerate,
+]
+
+NODE_CLASS_MAPPINGS = {c.__name__: c for c in _export_classes}
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "LoadOOTDPipeline": "Load OOTDiffusion",
-    "OOTDGenerate": "OOTDiffusion Generate",
+    c.__name__: getattr(c, "display_name", c.__name__) for c in _export_classes
 }
