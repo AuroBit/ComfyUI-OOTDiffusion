@@ -8,8 +8,8 @@ from PIL import Image
 import torch
 
 class OpenPose:
-    def __init__(self):
-        self.preprocessor = OpenposeDetector()
+    def __init__(self, body_model_path: str, *, device):
+        self.preprocessor = OpenposeDetector(body_model_path, device=device)
 
     def __call__(self, input_image, resolution=384):
         if isinstance(input_image, Image.Image):

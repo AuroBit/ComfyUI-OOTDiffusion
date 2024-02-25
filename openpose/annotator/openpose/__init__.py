@@ -12,7 +12,6 @@ import torch
 import numpy as np
 from . import util
 from .body import Body
-from ..util import annotator_ckpts_path
 
 body_model_path = "https://huggingface.co/lllyasviel/Annotators/resolve/main/body_pose_model.pth"
 hand_model_path = "https://huggingface.co/lllyasviel/Annotators/resolve/main/hand_pose_model.pth"
@@ -40,12 +39,14 @@ def draw_pose(pose, H, W, draw_body=True, draw_hand=True, draw_face=True):
 
 
 class OpenposeDetector:
-    def __init__(self):
-        body_modelpath = os.path.join(annotator_ckpts_path, "body_pose_model.pth")
+    def __init__(self, body_model_path: str, *, device):
+        body_modelpath = body_model_path
+        self.body_model_path = body_model_path
         # hand_modelpath = os.path.join(annotator_ckpts_path, "hand_pose_model.pth")
         # face_modelpath = os.path.join(annotator_ckpts_path, "facenet.pth")
 
         if not os.path.exists(body_modelpath):
+            raise
             from basicsr.utils.download_util import load_file_from_url
             load_file_from_url(body_model_path, model_dir=annotator_ckpts_path)
 
@@ -57,7 +58,7 @@ class OpenposeDetector:
         #     from basicsr.utils.download_util import load_file_from_url
         #     load_file_from_url(face_model_path, model_dir=annotator_ckpts_path)
 
-        self.body_estimation = Body(body_modelpath)
+        self.body_estimation = Body(body_modelpath, device=device)
         # self.hand_estimation = Hand(hand_modelpath)
         # self.face_estimation = Face(face_modelpath)
 

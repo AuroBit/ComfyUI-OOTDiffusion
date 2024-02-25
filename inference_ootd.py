@@ -14,6 +14,8 @@ from transformers import (
 )
 
 from . import pipelines_ootd
+from .humanparsing.aigc_run_parsing import Parsing
+from .openpose.run_openpose import OpenPose
 
 #! Necessary for OotdPipeline.from_pretrained
 sys.modules["pipelines_ootd"] = pipelines_ootd
@@ -27,29 +29,51 @@ class OOTDiffusion:
 
     def __init__(self, root: str, model_type: str = "hd"):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.torch_dtype = torch.float32 if self.device == "cpu" else torch.float16
 
         if model_type not in ("hd", "dc"):
             raise ValueError(f"model_type must be 'hd' or 'dc', got {model_type!r}")
 
         self.model_type = model_type
 
+        self.repo_root = root
+
         VIT_PATH = f"openai/clip-vit-large-patch14"
-        MODEL_PATH = Path(f"{root}/checkpoints/ootd")
+        MODEL_PATH = Path(root) / "checkpoints" / "ootd"
         if model_type == "hd":
             UNET_PATH = MODEL_PATH / "ootd_hd" / "checkpoint-36000"
         else:
             UNET_PATH = MODEL_PATH / "ootd_dc" / "checkpoint-36000"
 
+        atr_model_path = (
+            Path(root) / "checkpoints/humanparsing/exp-schp-201908301523-atr.pth"
+        )
+        lip_model_path = (
+            Path(root) / "checkpoints/humanparsing/exp-schp-201908261155-lip.pth"
+        )
+        self.parsing_model = Parsing(
+            atr_model_path=str(atr_model_path),
+            lip_model_path=str(lip_model_path),
+            device=self.device,
+        )
+        body_pose_model_path = (
+            Path(root) / "checkpoints/openpose/ckpts/body_pose_model.pth"
+        )
+        self.openpose_model = OpenPose(
+            str(body_pose_model_path),
+            device=self.device,
+        )
+
         unet_garm = UNetGarm2DConditionModel.from_pretrained(
             UNET_PATH,
             subfolder="unet_garm",
-            torch_dtype=torch.float16,
+            torch_dtype=self.torch_dtype,
             use_safetensors=True,
         )
         unet_vton = UNetVton2DConditionModel.from_pretrained(
             UNET_PATH,
             subfolder="unet_vton",
-            torch_dtype=torch.float16,
+            torch_dtype=self.torch_dtype,
             use_safetensors=True,
         )
         self.pipe = OotdPipeline.from_pretrained(
@@ -58,9 +82,9 @@ class OOTDiffusion:
             unet_vton=unet_vton,
             vae=AutoencoderKL.from_pretrained(
                 f"{MODEL_PATH}/vae",
-                torch_dtype=torch.float16,
+                torch_dtype=self.torch_dtype,
             ),
-            torch_dtype=torch.float16,
+            torch_dtype=self.torch_dtype,
             variant="fp16",
             use_safetensors=True,
             safety_checker=None,

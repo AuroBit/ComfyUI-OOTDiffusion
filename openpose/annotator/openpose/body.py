@@ -18,11 +18,9 @@ from .model import bodypose_model
 
 
 class Body(object):
-    def __init__(self, model_path):
-        self.model = bodypose_model()
-        if torch.cuda.is_available():
-            self.model = self.model.cuda()
-        #     print('cuda')
+    def __init__(self, model_path, *, device):
+        self.model = bodypose_model().to(device)
+        self.device = device
         model_dict = util.transfer(self.model, torch.load(model_path))
         self.model.load_state_dict(model_dict)
         self.model.eval()
@@ -48,8 +46,7 @@ class Body(object):
             im = np.ascontiguousarray(im)
 
             data = torch.from_numpy(im).float()
-            if torch.cuda.is_available():
-                data = data.cuda()
+            data = data.to(self.device)
             # data = data.permute([2, 0, 1]).unsqueeze(0).float()
             with torch.no_grad():
                 Mconv7_stage6_L1, Mconv7_stage6_L2 = self.model(data)

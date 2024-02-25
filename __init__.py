@@ -1,14 +1,14 @@
 import os
+import warnings
+from pathlib import Path
 
 import numpy as np
 from huggingface_hub import snapshot_download
 from PIL import Image
 from torchvision.transforms.functional import to_pil_image, to_tensor
 
-from .humanparsing.aigc_run_parsing import Parsing
 from .inference_ootd import OOTDiffusion
 from .ootd_utils import get_mask_location
-from .openpose.run_openpose import OpenPose
 
 _category_get_mask_input = {
     "upperbody": "upper_body",
@@ -76,6 +76,11 @@ class LoadOOTDPipelineHub(LoadOOTDPipeline):
             revision=self.repo_revision,
             resume_download=True,
         )
+        if os.path.exists("models/OOTDiffusion"):
+            warnings.warn(
+                "You've downloaded models with huggingface_hub cache. "
+                "Consider removing 'models/OOTDiffusion' directory to free your disk space."
+            )
         return (LoadOOTDPipeline.load_impl(type, path),)
 
 
@@ -138,8 +143,8 @@ class OOTDGenerate:
             print(f"Inconsistent cloth_image size {cloth_image.size} != (768, 1024)")
         cloth_image = cloth_image.resize((768, 1024))
 
-        model_parse, _ = Parsing(pipe.device)(model_image.resize((384, 512)))
-        keypoints = OpenPose()(model_image.resize((384, 512)))
+        model_parse, _ = pipe.parsing_model(model_image.resize((384, 512)))
+        keypoints = pipe.openpose_model(model_image.resize((384, 512)))
         mask, mask_gray = get_mask_location(
             pipe.model_type,
             _category_get_mask_input[category],

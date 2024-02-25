@@ -7,9 +7,6 @@ from pathlib import Path
 
 # PROJECT_ROOT = Path(__file__).absolute().parents[3].absolute()
 
-#! annotated config
-annotator_ckpts_path = "models/OOTDiffusion/checkpoints/openpose/ckpts"
-# print(annotator_ckpts_path)
 
 def HWC3(x):
     assert x.dtype == np.uint8

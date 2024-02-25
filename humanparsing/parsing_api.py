@@ -118,14 +118,13 @@ def refine_hole(parsing_result_filled, parsing_result, arm_mask):
 
 
 
-def load_atr_model():
+def load_atr_model(path: str):
     # load atr model
     num_classes = 18
     label = ['Background', 'Hat', 'Hair', 'Sunglasses', 'Upper-clothes', 'Skirt', 'Pants', 'Dress', 'Belt',
              'Left-shoe', 'Right-shoe', 'Face', 'Left-leg', 'Right-leg', 'Left-arm', 'Right-arm', 'Bag', 'Scarf']
     model = networks.init_model('resnet101', num_classes=num_classes, pretrained=None)
-    #! annotated config
-    state_dict = torch.load('models/OOTDiffusion/checkpoints/humanparsing/exp-schp-201908301523-atr.pth')['state_dict']
+    state_dict = torch.load(path)['state_dict']
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
         name = k[7:]  # remove `module.`
@@ -136,15 +135,14 @@ def load_atr_model():
     # load lip model
     return model
 
-def load_lip_model():
+def load_lip_model(path: str):
     # load atr model
     num_classes = 20
     label = ['Background', 'Hat', 'Hair', 'Glove', 'Sunglasses', 'Upper-clothes', 'Dress', 'Coat',
                   'Socks', 'Pants', 'Jumpsuits', 'Scarf', 'Skirt', 'Face', 'Left-arm', 'Right-arm',
                   'Left-leg', 'Right-leg', 'Left-shoe', 'Right-shoe']
     model = networks.init_model('resnet101', num_classes=num_classes, pretrained=None)
-    #! annotated config
-    state_dict = torch.load('models/OOTDiffusion/checkpoints/humanparsing/exp-schp-201908261155-lip.pth')['state_dict']
+    state_dict = torch.load(path)['state_dict']
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
         name = k[7:]  # remove `module.`
@@ -155,7 +153,7 @@ def load_lip_model():
     # load lip model
     return model
 
-def inference(model, lip_model, input_dir):
+def inference(model, lip_model, input_dir, *, device):
     # load datasetloader
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -171,7 +169,7 @@ def inference(model, lip_model, input_dir):
             w = meta['width'].numpy()[0]
             h = meta['height'].numpy()[0]
 
-            output = model(image.cuda())
+            output = model(image.to(device))
 
             upsample = torch.nn.Upsample(size=[512, 512], mode='bilinear', align_corners=True)
             upsample_output = upsample(output[0][-1][0].unsqueeze(0))
@@ -210,7 +208,7 @@ def inference(model, lip_model, input_dir):
             w = meta['width'].numpy()[0]
             h = meta['height'].numpy()[0]
 
-            output_lip = lip_model(image.cuda())
+            output_lip = lip_model(image.to(device))
 
             upsample = torch.nn.Upsample(size=[473, 473], mode='bilinear', align_corners=True)
             upsample_output_lip = upsample(output_lip[0][-1][0].unsqueeze(0))
