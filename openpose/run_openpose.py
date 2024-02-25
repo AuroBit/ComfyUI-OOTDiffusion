@@ -1,30 +1,11 @@
-import pdb
-
-import config
-from pathlib import Path
-import sys
-
-PROJECT_ROOT = Path(__file__).absolute().parents[0].absolute()
-sys.path.insert(0, str(PROJECT_ROOT))
-import os
-
-import cv2
-import einops
 import numpy as np
-import random
-import time
-import json
 
 # from pytorch_lightning import seed_everything
 from .annotator.util import resize_image, HWC3
 from .annotator.openpose import OpenposeDetector
 
-import argparse
 from PIL import Image
 import torch
-import pdb
-
-# os.environ['CUDA_VISIBLE_DEVICES'] = '0,1,2,3'
 
 class OpenPose:
     def __init__(self):

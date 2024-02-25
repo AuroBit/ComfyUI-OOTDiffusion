@@ -5,7 +5,6 @@
 # 4th Edited by ControlNet (added face and correct hands)
 
 import os
-import pdb
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
@@ -13,9 +12,7 @@ import torch
 import numpy as np
 from . import util
 from .body import Body
-from .hand import Hand
-from .face import Face
-from annotator.util import annotator_ckpts_path
+from ..util import annotator_ckpts_path
 
 body_model_path = "https://huggingface.co/lllyasviel/Annotators/resolve/main/body_pose_model.pth"
 hand_model_path = "https://huggingface.co/lllyasviel/Annotators/resolve/main/hand_pose_model.pth"
