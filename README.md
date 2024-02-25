@@ -10,33 +10,7 @@ Example workflow: [workflow.json](./assets/workflow.json)
 
 ## Instruction 指南
 
-根据 https://git-lfs.com 安装 git lfs：
-
-Ubuntu / Debian:
-
-```txt
-sudo apt install git-lfs
-```
-
-git lfs 初始化：
-
-```txt
-git lfs install
-```
-
-拉取 huggingface 🤗 库至 ComfyUI 根目录下的 `models/OOTDiffusion` 目录：
-
-```txt
-git clone https://huggingface.co/levihsu/OOTDiffusion models/OOTDiffusion
-```
-
-拉取 huggingface 时大约会下载 8 个模型，假如断开连接，可以使用下面命令恢复下载：
-
-```txt
-cd models/OOTDiffusion
-git lfs fetch
-git checkout main
-```
+Create environment and download dependencies:
 
 创建环境并下载依赖：
 
@@ -44,14 +18,18 @@ git checkout main
 conda create -n ootd
 conda activate ootd
 
-# 选择安装 11.8 / 12.1 cuda toolkit
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 
-# 安装此项目的依赖
+# Clone to custom_nodes
+git clone https://github.com/AuroBit/ComfyUI-OOTDiffusion.git custom_nodes/ComfyUI-OOTDiffusion
+
+# Install dependencies
 pip install -r custom_nodes/ComfyUI-OOTDiffusion/requirements.txt
 ```
 
-启动 ComfyUI 即可。
+Simply start ComfyUI and drag the example [workflow.json](./assets/workflow.json).
+
+启动 ComfyUI 并拖入示例 [workflow.json](./assets/workflow.json) 即可。
 
 ## FAQ 常见错误
 
