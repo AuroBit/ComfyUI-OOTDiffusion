@@ -4,9 +4,9 @@ A ComfyUI custom node that simply integrates the [OOTDiffusion](https://github.c
 
 一个简单接入 OOTDiffusion 的 ComfyUI 节点。
 
-👇 下载下面的流程图拖到 ComfyUI 前端即可运行 👇 Download and drag into ComfyUI frontend
-
 ![](./assets/graph.png)
+
+Example workflow: [workflow.json](./assets/workflow.json)
 
 ## Instruction 指南
 
