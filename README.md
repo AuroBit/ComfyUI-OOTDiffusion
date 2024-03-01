@@ -38,7 +38,7 @@ Windows 除了需要参照上面的配置教程，还需要额外配置 MSVC：
 首先是 nvcc 安装（确保 VIRTUAL_ENV/bin/nvcc 存在）：
 
 ```
-conda install cuda-nvcc -c conda-forge
+conda install cuda-nvcc -c nvidia
 ```
 
 ![](./assets/tutorial_windows_install.png)
