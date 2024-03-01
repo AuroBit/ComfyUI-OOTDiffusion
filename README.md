@@ -68,6 +68,10 @@ vcvars64.bat
 
 ## FAQ 常见错误
 
+> fatal error: cuda_runtime.h: No such file or directory compilation terminated. ninja: build stopped: subcommand failed.
+>
+> 解决办法：`conda install cuda-toolkit=12.1 -c nvidia`
+
 > subprocess.CalledProcessError: Command '['where', 'cl']' returned non-zero exit status 1.
 >
 > 解决办法：仅在 Windows 下出现，根据 [Windows 配置教程](#Windows-指南)
