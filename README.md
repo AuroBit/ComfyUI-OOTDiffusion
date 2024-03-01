@@ -20,6 +20,9 @@ conda activate ootd
 
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
 
+# Install nvcc compiler for torch cpp extensions
+conda install cuda-nvcc -c nvidia
+
 # Clone to custom_nodes
 git clone https://github.com/AuroBit/ComfyUI-OOTDiffusion.git custom_nodes/ComfyUI-OOTDiffusion
 
@@ -64,10 +67,6 @@ vcvars64.bat
 编译完成，成功启动。
 
 ## FAQ 常见错误
-
-> OSError: CUDA_HOME environment variable is not set. Please set it to your CUDA install root.
->
-> 参照：https://github.com/conda/conda/issues/7757
 
 > subprocess.CalledProcessError: Command '['where', 'cl']' returned non-zero exit status 1.
 >
