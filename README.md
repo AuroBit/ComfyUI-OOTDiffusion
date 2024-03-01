@@ -15,7 +15,7 @@ Create environment and download dependencies:
 创建环境并下载依赖：
 
 ```txt
-conda create -n ootd
+conda create -n ootd python=3.10
 conda activate ootd
 
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
