@@ -102,6 +102,10 @@ OOTDiffusion 本体依赖于 `diffusers==0.24.0` 实现，所以假如有其他�
 
 ## 更新日志 Release Note
 
+2024-03-04:
+
+添加 Full body 模型
+
 2024-03-01:
 
 添加 Windows 安装教程

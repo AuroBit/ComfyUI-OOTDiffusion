@@ -16,6 +16,12 @@ _category_get_mask_input = {
     "dress": "dresses",
 }
 
+_category_readable = {
+    "Upper body": "upperbody",
+    "Lower body": "lowerbody",
+    "Dress": "dress",
+}
+
 
 class LoadOOTDPipeline:
     display_name = "Load OOTDiffusion Local"
@@ -41,7 +47,6 @@ class LoadOOTDPipeline:
             type = "hd"
         elif type == "Full body":
             type = "dc"
-            raise RuntimeError("full body is not supported yet")
         else:
             raise ValueError(
                 f"unknown input type {type} must be 'Half body' or 'Full body'"
@@ -58,7 +63,7 @@ class LoadOOTDPipelineHub(LoadOOTDPipeline):
     display_name = "Load OOTDiffusion from Hub🤗"
 
     repo_id = "levihsu/OOTDiffusion"
-    repo_revision = "c63b33843e01c8c2c8e591a1d6b88a2feba478b8"
+    repo_revision = "6150dd90d7302f21348b8d8461766a400c00716a"
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -96,8 +101,6 @@ class OOTDGenerate:
                 "model_image": ("IMAGE",),
                 # Openpose from comfyui-controlnet-aux not work
                 # "keypoints": ("POSE_KEYPOINT",),
-                # TODO: add category when dc model release
-                # "category": ("STRING", ["upperbody", "lowerbody", "dress"]),
                 "seed": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFFFFFFFFFFFF}),
                 "steps": ("INT", {"default": 20, "min": 1, "max": 10000}),
                 "cfg": (
@@ -110,6 +113,7 @@ class OOTDGenerate:
                         "round": 0.01,
                     },
                 ),
+                "category": (list(_category_readable.keys()),),
             }
         }
 
@@ -119,8 +123,9 @@ class OOTDGenerate:
 
     CATEGORY = "OOTD"
 
-    def generate(self, pipe, cloth_image, model_image, seed, steps, cfg):
-        category = "upperbody"
+    def generate(
+        self, pipe: OOTDiffusion, cloth_image, model_image, category, seed, steps, cfg
+    ):
         # if model_image.shape != (1, 1024, 768, 3) or (
         #     cloth_image.shape != (1, 1024, 768, 3)
         # ):
@@ -128,6 +133,11 @@ class OOTDGenerate:
         #         f"Input image must be size (1, 1024, 768, 3). "
         #         f"Got model_image {model_image.shape} cloth_image {cloth_image.shape}"
         #     )
+        category = _category_readable[category]
+        if pipe.model_type == "hd" and category != "upperbody":
+            raise ValueError(
+                "Half body (hd) model type can only be used with upperbody category"
+            )
 
         # (1,H,W,3) -> (3,H,W)
         model_image = model_image.squeeze(0)
