@@ -88,9 +88,11 @@ OOTDiffusion Generate: 生成图像
 
 ## Example image 示例图片
 
-[衣服 1](./assets/cloth_1.jpg)
+Half body 半身: [模特](./assets/model_1.png) [衣服](./assets/cloth_1.jpg)
 
-[模特 1](./assets/model_1.png)
+Full body 全身: [模特](./assets/model_fullbody_1.png) [裤子](./assets/cloth_lower_body_1.jpg)
+
+Full body 裙子: [模特](./assets/model_dress_1.png) [裙子](./assets/cloth_dress_1.jpg)
 
 ## Detail 细节
 
