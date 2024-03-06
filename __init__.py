@@ -181,12 +181,12 @@ class OOTDGenerate:
 
         # pil(H,W,3) -> tensor(H,W,3)
         output_image = to_tensor(images[0])
-        output_image = output_image.permute((1, 2, 0))
+        output_image = output_image.permute((1, 2, 0)).unsqueeze(0)
         masked_vton_img = masked_vton_img.convert("RGB")
         masked_vton_img = to_tensor(masked_vton_img)
-        masked_vton_img = masked_vton_img.permute((1, 2, 0))
+        masked_vton_img = masked_vton_img.permute((1, 2, 0)).unsqueeze(0)
 
-        return ([output_image], [masked_vton_img])
+        return (output_image, masked_vton_img)
 
 
 _export_classes = [
