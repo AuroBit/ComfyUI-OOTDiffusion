@@ -14,7 +14,7 @@ from transformers import (
 )
 
 from . import pipelines_ootd
-from .humanparsing.aigc_run_parsing import Parsing
+from .humanparsing.run_parsing import Parsing
 from .openpose.run_openpose import OpenPose
 
 #! Necessary for OotdPipeline.from_pretrained
@@ -46,15 +46,14 @@ class OOTDiffusion:
             UNET_PATH = MODEL_PATH / "ootd_dc" / "checkpoint-36000"
 
         atr_model_path = (
-            Path(root) / "checkpoints/humanparsing/exp-schp-201908301523-atr.pth"
+            Path(root) / "checkpoints/humanparsing/parsing_atr.onnx"
         )
         lip_model_path = (
-            Path(root) / "checkpoints/humanparsing/exp-schp-201908261155-lip.pth"
+            Path(root) / "checkpoints/humanparsing/parsing_lip.onnx"
         )
         self.parsing_model = Parsing(
             atr_model_path=str(atr_model_path),
             lip_model_path=str(lip_model_path),
-            device=self.device,
         )
         body_pose_model_path = (
             Path(root) / "checkpoints/openpose/ckpts/body_pose_model.pth"

@@ -63,7 +63,7 @@ class LoadOOTDPipelineHub(LoadOOTDPipeline):
     display_name = "Load OOTDiffusion from Hub🤗"
 
     repo_id = "levihsu/OOTDiffusion"
-    repo_revision = "6150dd90d7302f21348b8d8461766a400c00716a"
+    repo_revision = "d33c517dc1b0718ea1136533e3720bb08fae641b"
 
     @classmethod
     def INPUT_TYPES(cls):

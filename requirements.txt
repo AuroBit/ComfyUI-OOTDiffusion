@@ -1,6 +1,5 @@
 torch
 torchvision
-torchaudio
 numpy
 scipy
 scikit-image
@@ -14,3 +13,4 @@ tqdm
 gradio
 einops
 ninja
+onnxruntime
