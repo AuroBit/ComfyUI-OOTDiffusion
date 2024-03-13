@@ -5,7 +5,7 @@ scipy
 scikit-image
 opencv-python
 pillow
-diffusers
+diffusers>=0.25.1
 transformers
 accelerate
 matplotlib
