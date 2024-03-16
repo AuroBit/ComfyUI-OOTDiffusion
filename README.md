@@ -76,10 +76,17 @@ vcvars64.bat
 git switch diffusers-0.26
 ```
 
+并重新安装依赖：
+
+```
+pip install --force-reinstall -r custom_nodes/ComfyUI-OOTDiffusion/requirements.txt
+```
+
 ## FAQ 常见错误
 
 ```
-fatal error: cuda_runtime.h: No such file or directory compilation terminated. ninja: build stopped: subcommand failed.
+fatal error: cuda_runtime.h: No such file or directory compilation terminated.
+ninja: build stopped: subcommand failed.
 ```
 
 解决办法：`conda install cuda-toolkit=12.1 -c nvidia` 并覆写 `CUDA_HOME` `CUDA_PATH` 环境变量
@@ -97,6 +104,8 @@ Load OOTDiffusion Local: 从本地目录加载 OOTDiffusion Pipeline
 Load OOTDiffusion from Hub: 从 huggingface 自动下载并加载 OOTDiffusion Pipeline
 
 OOTDiffusion Generate: 生成图像
+
+参数：
 
     cfg: 输出图像和输入衣服的贴合程度
 
