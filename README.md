@@ -45,8 +45,6 @@ conda install cuda-nvcc -c nvidia
 ```
 
 ![](./assets/tutorial_windows_install.png)
-![](./assets/tutorial_windows_install_1.png)
-![](./assets/tutorial_windows_install_2.png)
 ![](./assets/tutorial_windows_install_3.png)
 
 根据自己系统选择 Windows 10 SDK / Windows 11 SDK.
@@ -66,15 +64,31 @@ vcvars64.bat
 
 编译完成，成功启动。
 
+## diffusers 版本
+
+`main` 分支锁定 diffusers==0.24
+
+`diffusers-0.26` 分支锁定 diffusers==0.26.x
+
+要切换分支，请使用下面命令：
+
+```
+git switch diffusers-0.26
+```
+
 ## FAQ 常见错误
 
-> fatal error: cuda_runtime.h: No such file or directory compilation terminated. ninja: build stopped: subcommand failed.
->
-> 解决办法：`conda install cuda-toolkit=12.1 -c nvidia`
+```
+fatal error: cuda_runtime.h: No such file or directory compilation terminated. ninja: build stopped: subcommand failed.
+```
 
-> subprocess.CalledProcessError: Command '['where', 'cl']' returned non-zero exit status 1.
->
-> 解决办法：仅在 Windows 下出现，根据 [Windows 配置教程](#Windows-指南)
+解决办法：`conda install cuda-toolkit=12.1 -c nvidia` 并覆写 `CUDA_HOME` `CUDA_PATH` 环境变量
+
+```
+subprocess.CalledProcessError: Command '['where', 'cl']' returned non-zero exit status 1.
+```
+
+解决办法：仅在 Windows 下出现，根据 [Windows 配置教程](#Windows-指南)
 
 ## Node 节点
 
@@ -94,15 +108,15 @@ Full body 全身: [模特](./assets/model_fullbody_1.png) [裤子](./assets/clot
 
 Full body 裙子: [模特](./assets/model_dress_1.png) [裙子](./assets/cloth_dress_1.jpg)
 
-## Detail 细节
-
-目前此项目只是对 OOTDiffusion 的功能做了个简单的迁移。
-OOTDiffusion 本体依赖于 `diffusers==0.24.0` 实现，所以假如有其他节点的依赖冲突是没办法解决的（本就不该依赖 diffusers）。
-靠 vendor 也能解决，所以也不是大问题。
-
-在 `Ubuntu 22.02` / `Python 3.10.x` 下可以正常运行。Windows 没有测试过。
-
 ## 更新日志 Release Note
+
+2024-03-14:
+
+添加 `diffusers-0.26` 分支
+
+2024-03-10:
+
+添加 humanparsing onnx 支持
 
 2024-03-04:
 
