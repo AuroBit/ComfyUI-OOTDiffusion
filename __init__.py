@@ -79,7 +79,6 @@ class LoadOOTDPipelineHub(LoadOOTDPipeline):
         path = snapshot_download(
             self.repo_id,
             revision=self.repo_revision,
-            resume_download=True,
         )
         if os.path.exists("models/OOTDiffusion"):
             warnings.warn(
