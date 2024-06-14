@@ -1,0 +1,15 @@
+[project]
+name = "comfyui-ootdiffusion"
+description = "A ComfyUI custom node that simply integrates the [a/OOTDiffusion](https://github.com/levihsu/OOTDiffusion) functionality."
+version = "1.0.0"
+license = "LICENSE"
+dependencies = ["torch", "torchvision", "numpy", "scipy", "scikit-image", "opencv-python", "pillow", "diffusers==0.24.0", "transformers", "accelerate", "matplotlib", "tqdm", "gradio", "einops", "ninja", "onnxruntime"]
+
+[project.urls]
+Repository = "https://github.com/AuroBit/ComfyUI-OOTDiffusion"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI-OOTDiffusion"
+Icon = ""
